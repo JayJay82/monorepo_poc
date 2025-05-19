@@ -1,0 +1,47 @@
+# -------------------------------------------------------------------
+# Virtual environments “in‐project”
+# Ignora qualunque directory .venv in qualsiasi sottocartella
+**/.venv/
+
+# -------------------------------------------------------------------
+# Byte-compiled / cache
+**/__pycache__/
+**/*.py[cod]
+*$py.class
+
+# -------------------------------------------------------------------
+# Cache di test e type-checking
+**/.pytest_cache/
+**/.mypy_cache/
+
+# -------------------------------------------------------------------
+# File di ambiente locali
+.env
+.env.*
+
+# -------------------------------------------------------------------
+# Directory di build e packaging
+build/
+dist/
+**/*.egg-info/
+
+# -------------------------------------------------------------------
+# Lock file di altri tool (se non usi Pipenv, ad esempio)
+Pipfile.lock
+
+# -------------------------------------------------------------------
+# Configurazioni IDE / editor
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+*.swp
+
+# -------------------------------------------------------------------
+# File di sistema macOS / Windows
+.DS_Store
+Thumbs.db
+
+# -------------------------------------------------------------------
+# Log e output vari
+*.log
