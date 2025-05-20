@@ -43,7 +43,6 @@ Ogni sub‑progetto (`a2a/`, `math_agent/`, `mcp/`, …) dichiara **solo** il gr
 ```toml
 [tool.poetry.group.dev]
 optional    = false
-description = "Dipendenze per il development"
 
 [tool.poetry.group.dev.dependencies]
 pre-commit = "^3.0"
