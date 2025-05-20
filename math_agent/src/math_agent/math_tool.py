@@ -1,6 +1,7 @@
 # src/math_tools.py
 from agno.tools import tool
 
+
 @tool
 def calcola(expression: str) -> str:
     """Esegue il calcolo matematico dell'espressione fornita come stringa. Usa solo per operazioni matematiche."""

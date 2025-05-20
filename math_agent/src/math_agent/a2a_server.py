@@ -1,8 +1,6 @@
 from python_a2a import run_server
 
-from math_agent.agent import agent_card
-from math_agent.agent import MathAgentServer
-
+from math_agent.agent import MathAgentServer, agent_card
 
 # Crea l'agente math_agent con il tool calcola
 
