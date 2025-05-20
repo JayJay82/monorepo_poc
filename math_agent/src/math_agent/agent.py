@@ -26,3 +26,26 @@ class MathAgentServer(A2AServer):
                 parent_message_id=message.message_id,
                 conversation_id=message.conversation_id
             )
+
+agent_card = {
+        "name": "Math Agent for Enterprise",
+        "description": "A powerful math microservice agent using Agno, OpenAI, and A2A.",
+        "version": "2.0.0",
+        "capabilities": {
+            "streaming": False,
+            "pushNotifications": False,
+            "stateTransitionHistory": False,
+            "google_a2a_compatible": True,
+            "parts_array_format": True
+        },
+        "defaultInputModes": ["text/plain"],
+        "defaultOutputModes": ["text/plain"],
+        "skills": [
+            {
+                "name": "Calculate Math Expression",
+                "description": "Calculates any mathematical expression sent as input text.",
+                "input": "text",
+                "output": "text"
+            }
+        ]
+    }

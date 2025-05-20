@@ -28,6 +28,7 @@ dist/
 # -------------------------------------------------------------------
 # Lock file di altri tool (se non usi Pipenv, ad esempio)
 Pipfile.lock
+poetry.lock
 
 # -------------------------------------------------------------------
 # Configurazioni IDE / editor

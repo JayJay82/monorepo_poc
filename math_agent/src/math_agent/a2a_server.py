@@ -9,4 +9,5 @@ from math_agent.agent import MathAgentServer
 
 if __name__ == "__main__":
     agent = MathAgentServer()
+
     run_server(agent, host="0.0.0.0", port=8080)
