@@ -91,12 +91,55 @@ poetry run pre-commit install --install-hooks
 
 ## ➕ Aggiungere Nuovi Sub‑Progetti
 
-1. Crea la cartella del progetto e aggiungi un `pyproject.toml` con la sola porzione runtime:
+Ecco come creare e configurare un nuovo sub‑progetto **tramite CLI di Poetry**, garantendo un virtualenv isolato e l’integrazione automatica degli hook:
+
+1. **Dalla root del monorepo**, crea lo scheletro del progetto (sostituisci `<project-name>` con il nome desiderato, che sarà usato sia come directory che come nome del pacchetto):
+
+   ```bash
+   cd <path-to-monorepo>
+   poetry new --src <project-name>
+   ```
+
+   Questo comando genererà:
+
+   ```
+   <project-name>/
+   ├── pyproject.toml
+   └── src/<project_name>/__init__.py
+   ```
+
+   Se desideri usare un nome pacchetto diverso dalla directory, aggiungi l'opzione `--name`:
+
+   ````bash
+   poetry new --src <project-name> --name <package_name>
+   ```bash
+   cd <path-to-monorepo>
+   poetry new --src nuovo-progetto
+   ````
+
+   Questo comando genera:
+
+   ```
+   nuovo-progetto/
+   ├── pyproject.toml
+   └── src/nuovo_progetto/__init__.py
+   ```
+
+2. **Configura il gruppo `dev`** per gli hook in `nuovo-progetto/pyproject.toml`:
+
+   ```bash
+   cd nuovo-progetto
+   poetry add --group dev --dev pre-commit
+   ```
+
+   Dopo il comando, in `pyproject.toml` troverai:
 
    ```toml
    [tool.poetry]
    name        = "nuovo-progetto"
    version     = "0.1.0"
+   description = ""
+
    [tool.poetry.dependencies]
    python = "^3.10"
 
@@ -107,15 +150,31 @@ poetry run pre-commit install --install-hooks
    [tool.poetry.group.dev.dependencies]
    pre-commit = "^3.0"
    ```
-2. Installa e registra gli hook:
+
+3. **Installa runtime e dev-tools** (crea un venv dedicato):
 
    ```bash
-   cd nuovo-progetto
    poetry install --with dev
+   ```
+
+   Questo comando:
+
+   * crea un virtualenv separato per `nuovo-progetto`
+   * installa le dipendenze di runtime e il gruppo `dev`
+
+4. **Registra gli hook di pre-commit**:
+
+   ```bash
    poetry run pre-commit install --install-hooks
    ```
 
----
+5. **Verifica il setup**:
+
+   ```bash
+   poetry run pre-commit run --all-files
+   ```
+
+   oppure prova un normale `git commit` all’interno di `nuovo-progetto/`.
 
 ## 🔄 Aggiornamento delle dipendenze di sviluppo
 
