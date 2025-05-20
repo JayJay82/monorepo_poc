@@ -1,0 +1,16 @@
+[tool.black]
+line-length    = 88
+target-version = ['py310']
+
+[tool.isort]
+profile           = "black"
+line_length       = 88
+multi_line_output = 3
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore    = ["E203","W503"]
+
+[tool.commitizen]
+name       = "cz_conventional_commits"
+tag_format = "v$version"
