@@ -141,3 +141,30 @@ Puoi aggiungerli come hook in `.pre-commit-config.yaml` o come gruppi `dev` in `
 ---
 
 *Happy Coding!*
+
+## 🐞 Risoluzione Problemi
+
+Se i hook non partono automaticamente al `git commit`, segui questi passi:
+
+1. Esegui dalla root del repository Git:
+
+   ```bash
+   poetry run pre-commit install --hook-type pre-commit --hook-type commit-msg
+   ```
+
+   Dovresti vedere un messaggio come:
+
+   ```
+   pre-commit installed at /percorso/assoluto/.git/hooks/pre-commit
+   ```
+2. Verifica che i file `.git/hooks/pre-commit` e `.git/hooks/commit-msg` esistano ed siano eseguibili.
+3. Conferma l'installazione eseguendo:
+
+   ```bash
+   poetry run pre-commit run --all-files
+   ```
+
+   oppure prova un normale `git commit`.
+4. Ricorda che i hook funzionano anche se sei in una sotto-cartella, purché il file `.git` sia nella root del monorepo.
+
+Dopo questi passaggi, i tuoi hook (Black, isort, Flake8 e Commitizen) verranno eseguiti automaticamente a ogni commit.
