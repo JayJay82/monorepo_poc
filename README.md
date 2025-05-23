@@ -1,228 +1,139 @@
-# Monorepo Standards & Workflow
+# Monorepo‑POC
 
-Questa guida descrive gli **standard di codifica** e il **workflow di sviluppo** centralizzati per tutti i micro‑progetti del repository.
+> **Proof‑of‑Concept monorepo** built with Python 3.11+ and managed by **uv**. The workspace contains three internal packages:
+>
+
+> * `math_agent`   – LLM‑powered math agent, exposes **A2A Server**
+
 
 ---
 
-## 📁 Struttura del Monorepo
+## 1  Prerequisites
 
-```
-monorepo-poc/
-├── .pre-commit-config.yaml         # Hook di pre-commit condivisi
-├── pyproject.toml                  # Configurazioni strumenti (Black, isort, Flake8, Commitizen)
-├── dev-tools/                      # (opzionale) package con dev‑dependencies
-├── a2a/
-│   ├── pyproject.toml
-│   └── src/...                     # Codice runtime del sub-progetto
-├── math_agent/
-│   ├── pyproject.toml
-│   └── src/...
-├── mcp/
-│   ├── pyproject.toml
-│   └── src/...
-└── README.md                       # Questo file
-```
+| Tool       | Version | Install once                                                           |
+| ---------- | ------- | ---------------------------------------------------------------------- |
+| **Python** |  ≥ 3.11 | [https://www.python.org/downloads/](https://www.python.org/downloads/) |
+| **pipx**   |  ≥ 1.6  | `python -m pip install --user pipx` & `pipx ensurepath`                |
+| **uv**     |  ≥ 0.2  | `pipx install uv`                                                      |
 
-## 🛠️ Configurazioni centralizzate
+> On Windows re‑open PowerShell after `pipx ensurepath` so `%USERPROFILE%\.local\bin` is on *PATH*.
 
-* **Black**: formattazione codice secondo PEP‑8
-* **isort**: ordinamento import coerente con Black
-* **Flake8**: linting per errori e stile
-* **Commitizen**: enforcement Conventional Commits
-* **pre-commit**: orchestratore dei hook sopra elencati
+---
 
-Tutti i file di configurazione (versioni e regole) risiedono nella root:
-
-* `pyproject.toml` ➔ sezioni `[tool.black]`, `[tool.isort]`, `[tool.flake8]`, `[tool.commitizen]`
-* `.pre-commit-config.yaml` ➔ definizione dei repo e dei hook
-
-## 📦 Dipendenze di sviluppo
-
-Ogni sub‑progetto (`a2a/`, `math_agent/`, `mcp/`, …) dichiara **solo** il gruppo "dev" per `pre-commit`:
-
-```toml
-[tool.poetry.group.dev]
-optional    = false
-
-[tool.poetry.group.dev.dependencies]
-pre-commit = "^3.0"
-```
-
-Nessuna altra dev‑dependency è necessaria: i tool di lint/compliance vengono scaricati e isolati da pre‑commit.
-
-## 🚀 Installazione
-
-Per ciascun sub‑progetto, esegui:
+## 2  Cloning the repository
 
 ```bash
-cd <sub-progetto>
-poetry install --with dev    # installa runtime + pre-commit
-poetry run pre-commit install --install-hooks
+git clone https://github.com/JayJay82/monorepo_poc.git
+cd monorepo_poc
 ```
 
-> Se hai configurato Poetry per includere `dev` di default, `poetry install` basta.
+---
+
+## 3  Workspace Setup (one‑liner)
+
+```bash
+uv venv && uv sync --all-packages --group dev
+```
+
+* Creates `.venv/` in the repo root (ignored by Git).
+* Installs **runtime + dev dependencies** for *every* member listed in `[tool.uv.workspace]`.
+* Adds console scripts such as `a2a-server`, `black`, `ruff`, … inside `.venv/bin` / `Scripts`.
+
+### Updating later
+
+```bash
+uv add fastapi                 # add dependency to current pkg
+uv lock && uv sync             # regenerate lockfile & install
+```
 
 ---
 
-## ⚙️ Uso Quotidiano
+## 4  Global Dev Tooling
 
-### Formattazione & Lint
+| Task         | Command                                |
+| ------------ | -------------------------------------- |
+| Auto‑format  | `uv run -- black .`                    |
+| Import‑sort  | `uv run -- isort .`                    |
+| Lint (ruff)  | `uv run -- ruff check .`               |
+| Commit hooks | `uv run -- pre-commit run --all-files` |
 
-* Esegui tutti gli hook su tutti i file:
+A shared configuration lives in **`pyproject.toml`** (root):
 
-  ```bash
-  poetry run pre-commit run --all-files
-  ```
-* Oppure, al `git commit`, i hook partiranno automaticamente.
+```toml
+[tool.black]
+line-length = 88
 
-### Commit Convenzionali
+[tool.isort]
+profile = "black"
 
-* Il messaggio di commit viene validato dal hook `commitizen` secondo lo standard \[Conventional Commits].
-* Per composizione interattiva:
-
-  ```bash
-  pipx install commitizen       # una tantum
-  cd <sub-progetto>
-  cz commit
-  ```
-
----
-
-## ➕ Aggiungere Nuovi Sub‑Progetti
-
-Ecco come creare e configurare un nuovo sub‑progetto **tramite CLI di Poetry**, garantendo un virtualenv isolato e l’integrazione automatica degli hook:
-
-1. **Dalla root del monorepo**, crea lo scheletro del progetto (sostituisci `<project-name>` con il nome desiderato, che sarà usato sia come directory che come nome del pacchetto):
-
-   ```bash
-   cd <path-to-monorepo>
-   poetry new --src <project-name>
-   ```
-
-   Questo comando genererà:
-
-   ```
-   <project-name>/
-   ├── pyproject.toml
-   └── src/<project_name>/__init__.py
-   ```
-
-   Se desideri usare un nome pacchetto diverso dalla directory, aggiungi l'opzione `--name`:
-
-   ````bash
-   poetry new --src <project-name> --name <package_name>
-   ```bash
-   cd <path-to-monorepo>
-   poetry new --src nuovo-progetto
-   ````
-
-   Questo comando genera:
-
-   ```
-   nuovo-progetto/
-   ├── pyproject.toml
-   └── src/nuovo_progetto/__init__.py
-   ```
-
-2. **Configura il gruppo `dev`** per gli hook in `nuovo-progetto/pyproject.toml`:
-
-   ```bash
-   cd nuovo-progetto
-   poetry add --group dev --dev pre-commit
-   ```
-
-   Dopo il comando, in `pyproject.toml` troverai:
-
-   ```toml
-   [tool.poetry]
-   name        = "nuovo-progetto"
-   version     = "0.1.0"
-   description = ""
-
-   [tool.poetry.dependencies]
-   python = "^3.10"
-
-   [tool.poetry.group.dev]
-   optional    = false
-   description = "Dipendenze per il development"
-
-   [tool.poetry.group.dev.dependencies]
-   pre-commit = "^3.0"
-   ```
-
-3. **Installa runtime e dev-tools** (crea un venv dedicato):
-
-   ```bash
-   poetry install --with dev
-   ```
-
-   Questo comando:
-
-   * crea un virtualenv separato per `nuovo-progetto`
-   * installa le dipendenze di runtime e il gruppo `dev`
-
-4. **Registra gli hook di pre-commit**:
-
-   ```bash
-   poetry run pre-commit install --install-hooks
-   ```
-
-5. **Verifica il setup**:
-
-   ```bash
-   poetry run pre-commit run --all-files
-   ```
-
-   oppure prova un normale `git commit` all’interno di `nuovo-progetto/`.
-
-## 🔄 Aggiornamento delle dipendenze di sviluppo
-
-Per aggiornare le versioni di Black, isort, Flake8 o Commitizen:
-
-1. Modifica le rev in `.pre-commit-config.yaml` (repo e `rev:`).
-2. Esegui nei sub-progetti:
-
-   ```bash
-   poetry run pre-commit autoupdate
-   poetry run pre-commit install --install-hooks
-   ```
+[tool.flake8]
+max-line-length = 88
+```
 
 ---
 
-## 🧪 Altri Strumenti
+## 5  Running the A2A Server
 
-* **mypy**: tipizzazione statica
-* **safety**: scansione vulnerabilità dipendenze
+### Quick run (no activation needed)
 
-Puoi aggiungerli come hook in `.pre-commit-config.yaml` o come gruppi `dev` in `pyproject.toml`.
+```bash
+uv run -- a2a-server  --port 8080   # or other CLI args
+```
+
+### Alternative forms
+
+```bash
+# via module import (keeps sys.path clean)
+uv run -- python -m math_agent.a2a_server
+
+# classic venv activation
+source .venv/bin/activate && python src/math_agent/a2a_server.py
+```
+
+The server reads its configuration via environment variables; copy `.env.example` to `.env` and adjust as required.
 
 ---
 
-*Happy Coding!*
+## 6  Running Tests
 
-## 🐞 Risoluzione Problemi
+```bash
+uv run --pytest                 # run test suite in every package
+# or per‑package
+uv run --package math_agent -- pytest -q
+```
 
-Se i hook non partono automaticamente al `git commit`, segui questi passi:
+---
 
-1. Esegui dalla root del repository Git:
+## 7  Docker (optional deploy)
 
-   ```bash
-   poetry run pre-commit install --hook-type pre-commit --hook-type commit-msg
-   ```
+```Dockerfile
+FROM python:3.12-slim
+RUN pip install --no-cache-dir uv
+WORKDIR /app
+COPY pyproject.toml uv.lock ./
+RUN uv pip sync . --package math_agent --group dev && uv cache prune
+COPY math_agent/ ./math_agent
+CMD ["uv","run","--","a2a-server"]
+```
 
-   Dovresti vedere un messaggio come:
+Build & run:
 
-   ```
-   pre-commit installed at /percorso/assoluto/.git/hooks/pre-commit
-   ```
-2. Verifica che i file `.git/hooks/pre-commit` e `.git/hooks/commit-msg` esistano ed siano eseguibili.
-3. Conferma l'installazione eseguendo:
+```bash
+docker build -t a2a-server .
+docker run -p 8080:8080 a2a-server
+```
 
-   ```bash
-   poetry run pre-commit run --all-files
-   ```
+---
 
-   oppure prova un normale `git commit`.
-4. Ricorda che i hook funzionano anche se sei in una sotto-cartella, purché il file `.git` sia nella root del monorepo.
 
-Dopo questi passaggi, i tuoi hook (Black, isort, Flake8 e Commitizen) verranno eseguiti automaticamente a ogni commit.
+## 9  Troubleshooting & FAQ
+
+| Issue                                             | Fix                                                     |
+| ------------------------------------------------- | ------------------------------------------------------- |
+| **“program not found”** after `uv run -- black .` |  Did you install the *dev* group? `uv sync --group dev` |
+| uv lock fails with *package shadowing*            | Rename the local project (e.g. `mcp` → `mcp-local`).    |
+| Need per‑project venvs                            | `uv venv --package a2a` then `uv sync --package a2a`.   |
+
+---
+
+Happy hacking!  Feel free to open issues or PRs.
