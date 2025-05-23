@@ -1,16 +1,35 @@
+[project]
+name            = "monorepo-poc"
+version         = "0.0.0"
+description     = "Monorepo Proof-of-Concept migrated from Poetry to uv"
+requires-python = ">=3.11"
+
+[tool.uv.workspace]        # <— elenca i package
+members = ["math_agent"]
+
+# -------------------- CONFIGURAZIONE DEI TOOL GLOBALI --------------------
 [tool.black]
 line-length    = 88
-target-version = ['py310']
+target-version = ["py310"]
 
 [tool.isort]
 profile           = "black"
 line_length       = 88
 multi_line_output = 3
 
-[tool.flake8]
+[tool.flake8]      # richiede flake8-pyproject tra i dev-deps
 max-line-length = 88
-extend-ignore    = ["E203","W503"]
+extend-ignore    = ["E203", "W503"]
 
 [tool.commitizen]
 name       = "cz_conventional_commits"
 tag_format = "v$version"
+
+[dependency-groups]
+dev = [
+    "black>=25.1.0",
+    "flake8-pyproject>=1.2.3",
+    "isort>=6.0.1",
+    "pre-commit>=3.8.0",
+    "ruff>=0.11.11",
+]
