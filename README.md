@@ -50,6 +50,8 @@ uv lock && uv sync             # regenerate lockfile & install
 
 ## 4  Global Dev Tooling
 
+enable hooks uv run -- pre-commit install && uv run -- pre-commit install --hook-type commit-msg
+
 | Task         | Command                                |
 | ------------ | -------------------------------------- |
 | Auto‑format  | `uv run -- black .`                    |
