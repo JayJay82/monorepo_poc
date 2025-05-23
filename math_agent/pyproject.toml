@@ -7,12 +7,11 @@ requires-python = ">=3.13,<4"
 readme = "README.md"
 dependencies = [
     "agno (>=1.5.1,<2.0.0)",
-    "python-a2a (>=0.5.5,<0.6.0)",
     "openai (>=1.79.0,<2.0.0)",
     "fastapi (>=0.115.12,<0.116.0)",
     "uvicorn (>=0.34.2,<0.35.0)",
     "python-dotenv (>=1.1.0,<2.0.0)",
-    "a2a-server (>=0.1.4,<0.2.0)",
+    "a2a-sdk>=0.2.4",
 ]
 
 [dependency-groups]
@@ -23,6 +22,9 @@ include = ["src/math_agent"]
 
 [tool.hatch.build.targets.wheel]
 include = ["src/math_agent"]
+
+[project.scripts]
+math-server = "math_agent.math_agent_server:main"
 
 [tool.hatch.build.targets.wheel.sources]
 "src/math_agent" = "math_agent"
