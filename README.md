@@ -2,7 +2,6 @@
 
 > **Proof‑of‑Concept monorepo** built with Python 3.11+ and managed by **uv**. The workspace contains three internal packages:
 >
-
 > * `math_agent`   – LLM‑powered math agent, exposes **A2A Server**
 
 
@@ -46,16 +45,45 @@ uv add fastapi                 # add dependency to current pkg
 uv lock && uv sync             # regenerate lockfile & install
 ```
 
+### Per‑package virtual environments (optional)
+
+Sometimes you need an **isolated venv for just one member** (e.g. to try a new
+library without affecting the others). uv can generate as many venvs as you
+want:
+
+```bash
+# create a dedicated .venv‑a2a and install only its deps
+uv venv --package a2a
+uv sync --package a2a            # or add --group dev
+
+# same for math_agent
+uv venv --package math_agent
+uv sync --package math_agent
+```
+
+* Generated folders are named `.venv‑<package>` and are **git‑ignored** by
+  default.
+* Use the `--package` flag with every uv command to target that env:
+
+  ```bash
+  uv run --package a2a -- python -m a2a.cli
+  ```
+* You can still keep the global `.venv/` for day‑to‑day work; per‑package venvs
+  only activate when explicitly referenced.
+
 ---
 
 ## 4  Global Dev Tooling
 
-| Task         | Command                                |
-| ------------ | -------------------------------------- |
-| Auto‑format  | `uv run -- black .`                    |
-| Import‑sort  | `uv run -- isort .`                    |
-| Lint (ruff)  | `uv run -- ruff check .`               |
-| Commit hooks | `uv run -- pre-commit run --all-files` |
+| Task                 | Command                                |
+| -------------------- | -------------------------------------- |
+| Auto‑format          | `uv run -- black .`                    |
+| Import‑sort          | `uv run -- isort .`                    |
+| Lint (ruff)          | `uv run -- ruff check .`               |
+| Install hooks (once) | `uv run -- pre-commit install`         |
+| Run hooks manually   | `uv run -- pre-commit run --all-files` |
+
+*After the one‑time `uv run -- pre-commit install`, Git executes Black, isort, Ruff and Commitizen automatically on every `git commit`.*
 
 A shared configuration lives in **`pyproject.toml`** (root):
 
@@ -125,6 +153,23 @@ docker run -p 8080:8080 a2a-server
 
 ---
 
+## 8  CI / GitHub Actions snippet
+
+```yaml
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v1
+      - run: uv sync --all-packages --group dev
+      - run: |
+          uv run -- black . --check
+          uv run -- ruff check .
+          uv run --pytest
+```
+
+---
 
 ## 9  Troubleshooting & FAQ
 
