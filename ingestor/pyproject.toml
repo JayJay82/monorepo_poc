@@ -1,0 +1,24 @@
+[project]
+name = "ingestor"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Costa", email = "costantinocavallo@gmail.com" }
+]
+requires-python = ">=3.13, <4"
+dependencies = [
+    "llama-index>=0.12.37",
+    "llama-index-vector-stores-qdrant>=0.6.0",
+    "openai>=1.82.0",
+    "python-dotenv>=1.1.0",
+    "qdrant-client>=1.14.2",
+    "requests>=2.32.3",
+]
+
+[project.scripts]
+ingestor = "ingestor:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
