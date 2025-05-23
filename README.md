@@ -105,7 +105,7 @@ max-line-length = 88
 ### Quick run (no activation needed)
 
 ```bash
-uv run -- a2a-server  --port 8080   # or other CLI args
+uv run -- math_agent/src/a2a-server  --port 8080   # or other CLI args
 ```
 
 ### Alternative forms
